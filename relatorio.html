@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mediflow - Gerar Relatório</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #F8F9FA;
+      color: #0E4A6F;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 30px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #0E4A6F;
+      margin-top: 0;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+    input[type="date"], textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-family: inherit;
+    }
+    textarea {
+      min-height: 150px;
+    }
+    button {
+      background-color: #0E4A6F;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #1a6b9a;
+    }
+    .success-message {
+      display: none;
+      color: green;
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Gerar Relatório Diário</h1>
+    <form id="reportForm">
+      <div class="form-group">
+        <label for="reportDate">Data do Relatório</label>
+        <input type="date" id="reportDate" required>
+      </div>
+      <div class="form-group">
+        <label for="reportContent">Conteúdo do Relatório</label>
+        <textarea id="reportContent" placeholder="Descreva os principais atendimentos, observações e métricas..." required></textarea>
+      </div>
+      <button type="submit">Guardar Relatório</button>
+    </form>
+    
+    <div id="successMessage" class="success-message">
+      <p>✅ Relatório guardado com sucesso!</p>
+      <button onclick="window.location.href='dashboard_gestor.html'">Voltar ao Dashboard</button>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('reportForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Simular salvamento (em um sistema real, enviaria para o servidor)
+      const today = new Date().toISOString().split('T')[0];
+      const reportData = {
+        date: document.getElementById('reportDate').value || today,
+        content: document.getElementById('reportContent').value
+      };
+      
+      console.log('Relatório salvo:', reportData); // Apenas para demonstração
+      
+      // Mostrar mensagem de sucesso
+      document.getElementById('reportForm').style.display = 'none';
+      document.getElementById('successMessage').style.display = 'block';
+      
+      // Opcional: Salvar no localStorage para persistência
+      localStorage.setItem('ultimoRelatorio', JSON.stringify(reportData));
+    });
+    
+    // Definir data padrão como hoje
+    document.getElementById('reportDate').valueAsDate = new Date();
+  </script>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mediflow - Atendimento Inteligente</title>
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Handlee&family=Kite+One&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #F8F9FA;
+      color: #0E4A6F;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #E8DCCA;
+      padding: 15px 40px;
+    }
+    .logo-img {
+      height: 50px;
+      width: auto;
+    }
+    .nav-links {
+      display: flex;
+      gap: 20px;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: #0E4A6F;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover {
+      color: #748AA6;
+    }
+    .nav-links a:last-child {
+      background: #0E4A6F;
+      color: #F8F9FA;
+      padding: 8px 15px;
+      border-radius: 20px;
+    }
+    .nav-links a:last-child:hover {
+      background: #748AA6;
+    }
+    header {
+      text-align: center;
+      padding: 60px 20px 40px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .logo-text {
+      font-family: 'Alex Brush', cursive;
+      font-size: 3.5em;
+      color: #0E4A6F;
+      margin-bottom: 10px;
+    }
+    .slogan {
+      font-size: 1.4em;
+      color: #748AA6;
+      margin-bottom: 30px;
+      font-weight: 300;
+    }
+    .subheadline {
+      font-family: 'Kite One', sans-serif;
+      font-size: 1.1em;
+      color: #748AA6;
+      max-width: 700px;
+      margin: 0 auto 40px;
+      padding: 0 20px;
+      line-height: 1.8;
+    }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 10px;
+    }
+    .feature-item {
+      background: #FFFFFF;
+      padding: 20px;
+      border-radius: 6px;
+      box-shadow: 0 3px 10px rgba(14, 74, 111, 0.08);
+      font-family: 'Open Sans', sans-serif;
+      color: #748AA6;
+      font-size: 0.9em;
+      line-height: 1.5;
+    }
+    .feature-item b {
+      color: #0E4A6F;
+      font-size: 1.1em;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .feature-item canvas {
+      margin-top: 15px;
+      height: 180px !important;
+    }
+    .cta {
+      text-align: center;
+      margin: 60px auto;
+      padding: 0 20px;
+    }
+    .cta button {
+      background-color: #0E4A6F;
+      color: #F8F9FA;
+      padding: 16px 32px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 8px rgba(14, 74, 111, 0.2);
+      margin: 10px;
+    }
+    .cta button:hover {
+      background-color: #748AA6;
+      transform: translateY(-2px);
+    }
+    hr {
+      border: 0;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #A2C5D9, transparent);
+      width: 70%;
+      margin: 50px auto;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <!-- Barra superior -->
+  <div class="top-bar">
+    <img src="logotipo pt2.png" alt="Mediflow Logo" class="logo-img" />
+    <div class="nav-links">
+      <a href="#">Products</a>
+      <a href="login.html">Sign In</a>
+      <a href="register.html">Register</a>
+    </div>
+  </div>
+
+  <!-- Cabeçalho -->
+  <header>
+    <div class="logo-text">Mediflow</div>
+    <h1 class="slogan">O atendimento que você precisa, no tempo que merece</h1>
+    <p class="subheadline">
+      O Mediflow otimiza o atendimento hospitalar com IA, realidade aumentada e telemedicina.
+      Profissionais de saúde e gestores hospitalares ganham eficiência, reduzindo o tempo de espera e melhorando a precisão dos diagnósticos.
+    </p>
+  </header>
+
+  <hr />
+
+  <!-- Seção de features -->
+  <section class="features">
+    <div class="feature-item"><b>Triagem</b>A IA analisa sintomas e históricos clínicos para atribuir prioridade.</div>
+
+    <div class="feature-item">
+      <b>Gestão de procura</b>
+      Painéis com visualização em tempo real e análise de tendências.
+      <canvas id="graficoGestaoProcura"></canvas>
+    </div>
+
+    <div class="feature-item"><b>Telemedicina integrada</b>Permite consultas com especialistas remotamente.
+      <div style="background: #000; padding: 12px; border-radius: 6px; font-size: 0.85em; line-height: 1.4;">
+        <div style="background: #333; padding: 20px; text-align: center; border-radius: 4px; margin-bottom: 10px; color: white;">
+          Área de vídeo
+        </div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-bottom: 10px;">
+          <button disabled style="padding: 6px 12px; border: none; background: #0E4A6F; color: white; border-radius: 4px;">Iniciar Chamada</button>
+          <button disabled style="padding: 6px 12px; border: none; background: #0E4A6F; color: white; border-radius: 4px;">Encerrar Chamada</button>
+          <button disabled style="padding: 6px 12px; border: none; background: #0E4A6F; color: white; border-radius: 4px;">Compartilhar Tela</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="feature-item"><b>Eficiência</b>Redução do tempo de espera em cerca de 40% e aumento da precisão diagnóstica.
+      <canvas id="eficienciaChart"></canvas>
+    </div>
+
+    <div class="feature-item"><b>Experiência comprovada</b>Aumento da satisfação dos utentes, profissionais e gestores após a adoção do Mediflow.
+      <canvas id="satisfacaoChart"></canvas>
+    </div>
+
+    <div class="feature-item">
+      <b>Redução no Tempo de Espera</b>
+      20-30%<br />
+      Tempo médio até atendimento
+    </div>
+
+    <div class="feature-item">
+      <b>Velocidade de Decisão</b>
+      30% mais rápido<br />
+      Em casos críticos
+    </div>
+  </section>
+
+  <!-- Call to Action -->
+  <div class="cta">
+    <button onclick="window.location.href='login.html'">Teste aqui</button>
+  </div>
+
+  <!-- Scripts dos gráficos -->
+  <script>
+    const eficienciaCtx = document.getElementById('eficienciaChart').getContext('2d');
+    new Chart(eficienciaCtx, {
+      type: 'line',
+      data: {
+        labels: ['Tempo de Espera', 'Precisão Diagnóstica'],
+        datasets: [
+          {
+            label: 'Com Mediflow',
+            data: [30, 90],
+            borderColor: '#0E4A6F',
+            backgroundColor: '#0E4A6F33',
+            fill: true,
+            tension: 0.3
+          },
+          {
+            label: 'Sem Mediflow',
+            data: [60, 65],
+            borderColor: '#748AA6',
+            backgroundColor: '#748AA633',
+            fill: true,
+            tension: 0.3
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            title: { display: true, text: 'Tempo / Precisão (%)' },
+            beginAtZero: true,
+            max: 100
+          }
+        }
+      }
+    });
+
+    const satisfacaoCtx = document.getElementById('satisfacaoChart').getContext('2d');
+    new Chart(satisfacaoCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Utente', 'Profissional de Saúde', 'Gestor Hospitalar'],
+        datasets: [
+          {
+            label: 'Antes do Mediflow',
+            data: [60, 55, 50],
+            backgroundColor: '#748AA6'
+          },
+          {
+            label: 'Depois do Mediflow',
+            data: [90, 85, 88],
+            backgroundColor: '#0E4A6F'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            title: { display: true, text: 'Satisfação (%)' },
+            beginAtZero: true,
+            max: 100
+          }
+        }
+      }
+    });
+
+    const graficoGestaoCtx = document.getElementById('graficoGestaoProcura').getContext('2d');
+    new Chart(graficoGestaoCtx, {
+      type: 'bar',
+      data: {
+        labels: ['30/04/2025'],
+        datasets: [
+          {
+            label: 'Profissionais de Saúde',
+            data: [35],
+            backgroundColor: '#0E4A6F'
+          },
+          {
+            label: 'Pacientes',
+            data: [110],
+            backgroundColor: '#748AA6'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Gestão de Procura - 30/04/2025'
+          }
+        },
+        scales: {
+          x: {
+            stacked: false
+          },
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Número de Pessoas'
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

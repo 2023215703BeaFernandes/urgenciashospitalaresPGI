@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mediflow - Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    /* Mesmos estilos da página principal */
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #F8F9FA;
+      color: #0E4A6F;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+    
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #E8DCCA;
+      padding: 15px 40px;
+    }
+    
+    .logo-img {
+      height: 50px;
+      width: auto;
+    }
+    
+    .login-container {
+      max-width: 500px;
+      margin: 50px auto;
+      padding: 30px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .login-title {
+      text-align: center;
+      color: #0E4A6F;
+      margin-bottom: 30px;
+    }
+    
+    .profile-select {
+      display: flex;
+      justify-content: center;
+      margin-top: 30px;
+    }
+    
+    .profile-select button {
+      background-color: #0E4A6F;
+      color: #F8F9FA;
+      padding: 16px 32px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 8px rgba(14, 74, 111, 0.2);
+      margin: 10px;
+    }
+    
+    .profile-select button:hover {
+      background-color: #748AA6;
+      transform: translateY(-2px);
+    }
+    
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: #0E4A6F;
+      text-decoration: none;
+    }
+    
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <img src="logotipo pt2.png" alt="Mediflow Logo" class="logo-img">
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="#">Products</a>
+      <a href="#">Resources</a>
+      <a href="#">Contact</a>
+    </div>
+  </div>
+
+  <div class="login-container">
+    <h1 class="login-title">Acesse o Mediflow</h1>
+    <p style="text-align: center; color: #748AA6;">Selecione o seu perfil para continuar:</p>
+    
+    <div class="profile-select">
+      <button onclick="window.location.href='login_profissional.html'">Profissional de Saúde</button>
+      <button onclick="window.location.href='login_gestor.html'">Gestor Hospitalar</button>
+    </div>
+    
+    <a href="index.html" class="back-link">← Voltar para a página inicial</a>
+  </div>
+</body>
+</html>

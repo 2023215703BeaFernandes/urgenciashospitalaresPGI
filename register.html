@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mediflow - Cadastro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Handlee&family=Kite+One&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #F8F9FA;
+      color: #0E4A6F;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+    
+    /* Barra superior */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #E8DCCA;
+      padding: 15px 40px;
+    }
+    
+    .logo-img {
+      height: 50px;
+      width: auto;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 20px;
+    }
+    
+    .nav-links a {
+      text-decoration: none;
+      color: #0E4A6F;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+    
+    .nav-links a:hover {
+      color: #748AA6;
+    }
+    
+    .nav-links a:last-child {
+      background: #0E4A6F;
+      color: #F8F9FA;
+      padding: 8px 15px;
+      border-radius: 20px;
+    }
+    
+    .nav-links a:last-child:hover {
+      background: #748AA6;
+    }
+    
+    /* Conteúdo principal */
+    .register-container {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 40px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .register-title {
+      text-align: center;
+      color: #0E4A6F;
+      margin-bottom: 30px;
+      font-size: 2em;
+    }
+    
+    .logo-text {
+      font-family: 'Alex Brush', cursive;
+      font-size: 2.5em;
+      color: #0E4A6F;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    
+    .register-form {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #0E4A6F;
+    }
+    
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      transition: border 0.3s;
+    }
+    
+    .form-group input:focus, .form-group select:focus {
+      border-color: #0E4A6F;
+      outline: none;
+    }
+    
+    .user-type-selector {
+      display: flex;
+      justify-content: space-between;
+      margin: 20px 0;
+    }
+    
+    .user-type {
+      flex: 1;
+      text-align: center;
+      padding: 15px;
+      margin: 0 5px;
+      border: 2px solid #E8DCCA;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .user-type:hover {
+      border-color: #0E4A6F;
+    }
+    
+    .user-type.selected {
+      background-color: #E8DCCA;
+      border-color: #0E4A6F;
+    }
+    
+    .user-type input {
+      display: none;
+    }
+    
+    .user-type i {
+      font-size: 2em;
+      margin-bottom: 10px;
+      color: #0E4A6F;
+    }
+    
+    .register-button {
+      background-color: #0E4A6F;
+      color: #F8F9FA;
+      padding: 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 20px;
+      font-weight: 600;
+    }
+    
+    .register-button:hover {
+      background-color: #748AA6;
+    }
+    
+    .login-link {
+      text-align: center;
+      margin-top: 20px;
+      color: #748AA6;
+    }
+    
+    .login-link a {
+      color: #0E4A6F;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+    
+    .form-row {
+      display: flex;
+      gap: 20px;
+    }
+    
+    .form-row .form-group {
+      flex: 1;
+    }
+    
+    /* Campos específicos para cada tipo de usuário */
+    .professional-fields, .manager-fields {
+      display: none;
+    }
+    
+    /* Mostrar campos específicos quando o tipo for selecionado */
+    #professional:checked ~ .professional-fields {
+      display: block;
+    }
+    
+    #manager:checked ~ .manager-fields {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <!-- Barra superior com logo e navegação -->
+  <div class="top-bar">
+    <img src="logotipo pt2.png" alt="Mediflow Logo" class="logo-img">
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="#">Sobre</a>
+      <a href="#">Recursos</a>
+      <a href="#">Contato</a>
+      <a href="login.html">Entrar</a>
+    </div>
+  </div>
+
+  <!-- Conteúdo principal -->
+  <div class="register-container">
+    <div class="logo-text">Mediflow</div>
+    <h1 class="register-title">Crie sua conta</h1>
+    
+    <form class="register-form" id="registrationForm">
+      <!-- Seletor de tipo de usuário -->
+      <div class="user-type-selector">
+        <label class="user-type" onclick="selectUserType('professional')">
+          <input type="radio" name="userType" id="professional" value="professional">
+          <i>👨‍⚕️</i>
+          <div>Profissional de Saúde</div>
+        </label>
+        
+        <label class="user-type" onclick="selectUserType('manager')">
+          <input type="radio" name="userType" id="manager" value="manager">
+          <i>👔</i>
+          <div>Gestor Hospitalar</div>
+        </label>
+      </div>
+      
+      <!-- Campos comuns a todos os usuários -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="firstName">Nome</label>
+          <input type="text" id="firstName" required>
+        </div>
+        <div class="form-group">
+          <label for="lastName">Sobrenome</label>
+          <input type="text" id="lastName" required>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Senha</label>
+        <input type="password" id="password" minlength="8" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="confirmPassword">Confirmar Senha</label>
+        <input type="password" id="confirmPassword" minlength="8" required>
+      </div>
+      
+      <!-- Campos específicos para profissionais de saúde -->
+      <div class="professional-fields">
+        <div class="form-group">
+          <label for="specialty">Especialidade</label>
+          <select id="specialty" required>
+            <option value="">Selecione sua especialidade</option>
+            <option value="clinic">Clínico Geral</option>
+            <option value="pediatric">Pediatria</option>
+            <option value="surgery">Cirurgia</option>
+            <option value="cardiology">Cardiologia</option>
+            <option value="neurology">Neurologia</option>
+            <option value="other">Outra</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="crm">Registro Profissional (CRM/COREN)</label>
+          <input type="text" id="crm" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="hospital">Hospital/Instituição</label>
+          <input type="text" id="hospital">
+        </div>
+      </div>
+      
+      <!-- Campos específicos para gestores hospitalares -->
+      <div class="manager-fields">
+        <div class="form-group">
+          <label for="hospitalName">Nome do Hospital/Instituição</label>
+          <input type="text" id="hospitalName">
+        </div>
+        
+        <div class="form-group">
+          <label for="position">Cargo</label>
+          <input type="text" id="position" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="hospitalSize">Tamanho do Hospital</label>
+          <select id="hospitalSize">
+            <option value="">Selecione o porte</option>
+            <option value="small">Pequeno (até 50 leitos)</option>
+            <option value="medium">Médio (50-200 leitos)</option>
+            <option value="large">Grande (mais de 200 leitos)</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <input type="checkbox" id="terms" required>
+        <label for="terms">Eu concordo com os <a href="#">Termos de Serviço</a> e <a href="#">Política de Privacidade</a></label>
+      </div>
+      
+      <button type="submit" class="register-button">Criar Conta</button>
+      
+      <div class="login-link">
+        Já tem uma conta? <a href="login.html">Faça login</a>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // Selecionar tipo de usuário
+    function selectUserType(type) {
+      // Remove a classe 'selected' de todos os tipos
+      document.querySelectorAll('.user-type').forEach(el => {
+        el.classList.remove('selected');
+      });
+      
+      // Adiciona a classe 'selected' apenas ao tipo clicado
+      event.currentTarget.classList.add('selected');
+      
+      // Ativa o radio button correspondente
+      document.getElementById(type).checked = true;
+    }
+    
+    // Validação do formulário
+    document.getElementById('registrationForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Verificar se as senhas coincidem
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      
+      if (password !== confirmPassword) {
+        alert('As senhas não coincidem!');
+        return;
+      }
+      
+      // Verificar se um tipo de usuário foi selecionado
+      const userType = document.querySelector('input[name="userType"]:checked');
+      
+      if (!userType) {
+        alert('Por favor, selecione um tipo de usuário');
+        return;
+      }
+      
+      // Verificar termos de serviço
+      if (!document.getElementById('terms').checked) {
+        alert('Deve aceitar os termos de serviço');
+        return;
+      }
+      
+      // Mostrar mensagem de sucesso
+      alert('Conta criada com sucesso! Você será redirecionado para a página inicial.');
+      
+      // Redirecionar para a página principal após 2 segundos
+      setTimeout(function() {
+        document.location = 'index.html';
+      }, 2000);
+    });
+  </script>
+</body>
+</html>

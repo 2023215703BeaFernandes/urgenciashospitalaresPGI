@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mediflow - Alocar Recursos</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #F8F9FA;
+      color: #0E4A6F;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 30px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #0E4A6F;
+      margin-top: 0;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-family: inherit;
+    }
+    textarea {
+      min-height: 100px;
+    }
+    button {
+      background-color: #0E4A6F;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 5px;
+    }
+    button:hover {
+      background-color: #1a6b9a;
+    }
+    .success-message {
+      display: none;
+      color: green;
+      text-align: center;
+      margin-top: 20px;
+    }
+    .button-group {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .button-group button {
+      margin: 0 10px;
+    }
+    #newAllocationBtn {
+      background-color: #2ecc71;
+    }
+    #newAllocationBtn:hover {
+      background-color: #27ae60;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Alocação de Recursos Hospitalares</h1>
+    <form id="allocationForm">
+      <div class="form-group">
+        <label for="allocationDate">Data para Alocação</label>
+        <input type="date" id="allocationDate" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="resourceType">Tipo de Recurso</label>
+        <select id="resourceType" required>
+          <option value="">Selecione...</option>
+          <option value="medico">Médico</option>
+          <option value="enfermeiro">Enfermeiro</option>
+          <option value="tecnico">Técnico de Enfermagem</option>
+          <option value="equipamento">Equipamento</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="quantity">Quantidade Necessária</label>
+        <input type="number" id="quantity" min="1" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="urgency">Nível de Urgência</label>
+        <select id="urgency" required>
+          <option value="normal">Normal</option>
+          <option value="urgente">Urgente</option>
+          <option value="critico">Crítico</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="notes">Observações</label>
+        <textarea id="notes" placeholder="Detalhe a necessidade específica..."></textarea>
+      </div>
+      
+      <button type="submit">Enviar Alocação</button>
+    </form>
+    
+    <div id="successMessage" class="success-message">
+      <p>📨 Solicitação de alocação enviada com sucesso!</p>
+      <div class="button-group">
+        <button id="newAllocationBtn" onclick="newAllocation()">Nova Alocação</button>
+        <button onclick="window.location.href='dashboard_gestor.html'">Voltar ao Dashboard</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('allocationForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Coletar dados do formulário
+      const allocationData = {
+        date: document.getElementById('allocationDate').value,
+        resourceType: document.getElementById('resourceType').value,
+        quantity: document.getElementById('quantity').value,
+        urgency: document.getElementById('urgency').value,
+        notes: document.getElementById('notes').value,
+        timestamp: new Date().toISOString()
+      };
+      
+      console.log('Dados de alocação:', allocationData);
+      
+      // Mostrar mensagem de sucesso
+      document.getElementById('allocationForm').style.display = 'none';
+      document.getElementById('successMessage').style.display = 'block';
+      
+      // Salvar no localStorage (corrigido)
+      const allocations = JSON.parse(localStorage.getItem('alocacoes') || '[]');
+      allocations.push(allocationData);
+      localStorage.setItem('alocacoes', JSON.stringify(allocations));
+    });
+    
+    // Função para nova alocação
+    function newAllocation() {
+      // Resetar o formulário
+      document.getElementById('allocationForm').reset();
+      document.getElementById('allocationDate').valueAsDate = new Date();
+      
+      // Mostrar formulário e esconder mensagem de sucesso
+      document.getElementById('allocationForm').style.display = 'block';
+      document.getElementById('successMessage').style.display = 'none';
+    }
+    
+    // Definir data padrão como hoje
+    document.getElementById('allocationDate').valueAsDate = new Date();
+  </script>
+</body>
+</html>
