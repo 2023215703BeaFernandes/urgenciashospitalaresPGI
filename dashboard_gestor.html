@@ -218,7 +218,13 @@
       max-height: 100%;
       display: block;
     }
-    
+
+    .recommendation-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
   </style>
 </head>
 <body>
@@ -327,7 +333,7 @@
         <h3>Distribuição de Profissionais por Turno</h3>
         <div class="date-controls">
           <label for="staff-date">Data:</label>
-          <input type="date" id="staff-date" onchange="updateStaffChart()">
+          <input type="date" id="staff-date" onchange="updateAllCharts()">
         </div>
         <canvas id="staffDistributionChart"></canvas>
       </div>
@@ -335,15 +341,21 @@
         <h3>Comparação Pico x Profissionais</h3>
         <div class="date-controls">
           <label for="comparison-date">Data:</label>
-          <input type="date" id="comparison-date" onchange="updateComparisonChart()">
+          <input type="date" id="comparison-date" onchange="updateAllCharts()">
         </div>
         <canvas id="comparisonChart"></canvas>
       </div>
     </div>
     
     <div class="chart-comparison">
-      <h3>Recomendações de Alocação</h3>
-      <table>
+      <div class="recommendation-controls">
+        <h3>Recomendações de Alocação</h3>
+        <div class="date-controls">
+          <label for="recommendation-date">Data:</label>
+          <input type="date" id="recommendation-date" onchange="updateRecommendations()">
+        </div>
+      </div>
+      <table id="recommendations-table">
         <thead>
           <tr>
             <th>Período</th>
@@ -356,24 +368,24 @@
         <tbody>
           <tr>
             <td>08:00-10:00</td>
-            <td>42</td>
-            <td>15</td>
-            <td class="decline">-27%</td>
-            <td>Adicionar 5 profissionais</td>
+            <td class="patients-count">42</td>
+            <td class="staff-count">15</td>
+            <td class="balance decline">-27%</td>
+            <td class="recommendation">Adicionar 5 profissionais</td>
           </tr>
           <tr>
             <td>14:00-16:00</td>
-            <td>38</td>
-            <td>18</td>
-            <td class="decline">-12%</td>
-            <td>Adicionar 2 profissionais</td>
+            <td class="patients-count">38</td>
+            <td class="staff-count">18</td>
+            <td class="balance decline">-12%</td>
+            <td class="recommendation">Adicionar 2 profissionais</td>
           </tr>
           <tr>
             <td>20:00-22:00</td>
-            <td>25</td>
-            <td>12</td>
-            <td class="improvement">+8%</td>
-            <td>Alocação adequada</td>
+            <td class="patients-count">25</td>
+            <td class="staff-count">12</td>
+            <td class="balance improvement">+8%</td>
+            <td class="recommendation">Alocação adequada</td>
           </tr>
         </tbody>
       </table>
@@ -383,6 +395,7 @@
   <script>
     // Variáveis globais para os gráficos
     let patientFlowChart, forecastChart, staffDistributionChart, comparisonChart;
+    let currentDate = new Date();
 
     // Função para inicializar todos os gráficos
     function initializeCharts() {
@@ -672,7 +685,6 @@
       });
     }
 
-
     // Função para gerar dados horários fictícios
     function generateHourlyData(date) {
       const dayOfWeek = date.getDay();
@@ -684,9 +696,41 @@
         if (hour >= 14 && hour <= 16) base += 15;
         if (hour >= 22 || hour <= 6) base *= 0.4;
         if (isWeekend) base *= 0.8;
-        const value= Math.floor(base + Math.random() * 10);
-        return Math.max(0,value);
+        const value = Math.floor(base + Math.random() * 10);
+        return Math.max(0, value);
       });
+    }
+
+    // Função para gerar dados de profissionais por turno
+    function generateStaffData(date) {
+      const dayOfWeek = date.getDay();
+      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+      
+      // Retorna [manhã, tarde, noite]
+      if (isWeekend) {
+        return [12 + Math.floor(Math.random() * 3), 15 + Math.floor(Math.random() * 3), 10 + Math.floor(Math.random() * 2)];
+      } else {
+        return [15 + Math.floor(Math.random() * 4), 18 + Math.floor(Math.random() * 4), 12 + Math.floor(Math.random() * 3)];
+      }
+    }
+
+    // Função para gerar dados de comparação
+    function generateComparisonData(date) {
+      const dayOfWeek = date.getDay();
+      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+      
+      // Retorna [pacientes, profissionais] para cada período
+      if (isWeekend) {
+        return {
+          patients: [35 + Math.floor(Math.random() * 10), 32 + Math.floor(Math.random() * 8), 20 + Math.floor(Math.random() * 6)],
+          staff: [10 + Math.floor(Math.random() * 2), 15 + Math.floor(Math.random() * 2), 8 + Math.floor(Math.random() * 2)]
+        };
+      } else {
+        return {
+          patients: [42 + Math.floor(Math.random() * 10), 38 + Math.floor(Math.random() * 8), 25 + Math.floor(Math.random() * 6)],
+          staff: [15 + Math.floor(Math.random() * 3), 18 + Math.floor(Math.random() * 3), 12 + Math.floor(Math.random() * 2)]
+        };
+      }
     }
 
     // Função para gerar rótulos de dias
@@ -732,37 +776,86 @@
       forecastChart.update();
     }
 
-    function updateStaffChart() {
-      const dateStr = document.getElementById('staff-date').value;
-      const date = dateStr ? new Date(dateStr) : new Date();
-      const dayOfWeek = date.getDay();
-      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-      
-      staffDistributionChart.data.datasets[0].data = [
-        isWeekend ? 12 : 15,
-        isWeekend ? 15 : 18,
-        isWeekend ? 10 : 12
-      ];
+    function updateStaffChart(date) {
+      const staffData = generateStaffData(date);
+      staffDistributionChart.data.datasets[0].data = staffData;
       staffDistributionChart.update();
     }
 
-    function updateComparisonChart() {
-      const dateStr = document.getElementById('comparison-date').value;
-      const date = dateStr ? new Date(dateStr) : new Date();
-      const dayOfWeek = date.getDay();
-      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-      
-      comparisonChart.data.datasets[0].data = [
-        isWeekend ? 35 : 42,
-        isWeekend ? 32 : 38,
-        isWeekend ? 20 : 25
-      ];
-      comparisonChart.data.datasets[1].data = [
-        isWeekend ? 10 : 15,
-        isWeekend ? 15 : 18,
-        isWeekend ? 8 : 12
-      ];
+    function updateComparisonChart(date) {
+      const comparisonData = generateComparisonData(date);
+      comparisonChart.data.datasets[0].data = comparisonData.patients;
+      comparisonChart.data.datasets[1].data = comparisonData.staff;
       comparisonChart.update();
+    }
+
+    function updateRecommendations() {
+      const dateStr = document.getElementById('recommendation-date').value;
+      const date = dateStr ? new Date(dateStr) : new Date();
+      
+      // Garantir que a data está sincronizada nos outros campos
+      document.getElementById('staff-date').value = dateStr;
+      document.getElementById('comparison-date').value = dateStr;
+      
+      // Atualizar o gráfico de comparação primeiro
+      updateComparisonChart(date);
+      
+      // Obter os dados mais recentes do gráfico de comparação
+      const comparisonData = {
+        patients: comparisonChart.data.datasets[0].data,
+        staff: comparisonChart.data.datasets[1].data
+      };
+      
+      // Atualizar a tabela com esses dados
+      updateRecommendationsTable(comparisonData);
+    }
+
+    function updateRecommendationsTable(data) {
+      const tableRows = document.querySelectorAll('#recommendations-table tbody tr');
+      
+      tableRows.forEach((row, index) => {
+        const patientsCell = row.querySelector('.patients-count');
+        const staffCell = row.querySelector('.staff-count');
+        const balanceCell = row.querySelector('.balance');
+        const recommendationCell = row.querySelector('.recommendation');
+        
+        const patients = data.patients[index];
+        const staff = data.staff[index];
+        const balancePercentage = Math.round(((staff - patients) / patients) * 100);
+        
+        patientsCell.textContent = patients;
+        staffCell.textContent = staff;
+        balanceCell.textContent = `${balancePercentage}%`;
+        
+        // Atualizar classe de cor com base no balanço
+        balanceCell.classList.remove('improvement', 'decline');
+        if (balancePercentage >= 0) {
+          balanceCell.classList.add('improvement');
+          recommendationCell.textContent = 'Alocação adequada';
+        } else {
+          balanceCell.classList.add('decline');
+          const needed = Math.ceil(Math.abs(patients - staff) / 5); // 1 profissional para cada 5 pacientes
+          recommendationCell.textContent = `Adicionar ${needed} profissional${needed > 1 ? 's' : ''}`;
+        }
+      });
+    }
+
+    function updateAllCharts() {
+      // Obter a data selecionada (usar a mesma para ambos os gráficos)
+      const dateStr = document.getElementById('staff-date').value || 
+                     document.getElementById('comparison-date').value || 
+                     document.getElementById('recommendation-date').value;
+      const date = dateStr ? new Date(dateStr) : new Date();
+      
+      // Atualizar todos os inputs de data para manter sincronização
+      document.getElementById('staff-date').value = dateStr || date.toISOString().split('T')[0];
+      document.getElementById('comparison-date').value = dateStr || date.toISOString().split('T')[0];
+      document.getElementById('recommendation-date').value = dateStr || date.toISOString().split('T')[0];
+      
+      // Atualizar os gráficos
+      updateStaffChart(date);
+      updateComparisonChart(date);
+      updateRecommendations();
     }
 
     // Funções auxiliares
@@ -779,7 +872,6 @@
       }
     }
     
-
     function analyzePeakTimes() {
       alert('Análise concluída: Os principais picos ocorrem entre 8h-10h e 14h-16h. Recomendamos alocar mais profissionais nestes horários.');
     }
@@ -792,6 +884,7 @@
       
       document.getElementById('staff-date').value = todayStr;
       document.getElementById('comparison-date').value = todayStr;
+      document.getElementById('recommendation-date').value = todayStr;
       
       // Inicializar gráficos
       initializeCharts();
@@ -799,8 +892,7 @@
       // Atualizar gráficos com dados iniciais
       updateHistoricalChart();
       updateForecastChart();
-      updateStaffChart();
-      updateComparisonChart();
+      updateAllCharts();
     });
 
   </script>

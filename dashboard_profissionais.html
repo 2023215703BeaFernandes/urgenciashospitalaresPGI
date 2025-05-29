@@ -820,6 +820,13 @@
   }
 
 
+  document.addEventListener('DOMContentLoaded', function() {
+    const nomeProfissional = sessionStorage.getItem('currentUserName');
+    if (nomeProfissional) {
+      document.querySelector('.dashboard-title').textContent = `Bem-vindo, ${nomeProfissional}`;
+    }
+  });
+
   document.getElementById('triageForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const patientName = document.getElementById('triagePatient').value;
@@ -1198,6 +1205,35 @@
       
       // Inicializa a lista de pacientes
       updatePatientSelect();
+    });
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Recupera o número da célula armazenado
+      const userCell = sessionStorage.getItem('currentUserCell');
+      
+      // Aqui você normalmente faria uma chamada AJAX para buscar o nome no servidor
+      // Para este exemplo, vamos simular uma resposta do servidor
+      
+      // Simulação: substitua por uma chamada real ao seu backend
+      fetch(`/api/profissionais?cell=${userCell}`)
+        .then(response => response.json())
+        .then(data => {
+          // Atualiza o título com o nome do profissional
+          const titleElement = document.querySelector('.dashboard-title');
+          if (titleElement && data.nome) {
+            titleElement.textContent = `Bem-vindo, ${data.nome}`;
+          }
+        })
+        .catch(error => {
+          console.error('Erro ao buscar dados do profissional:', error);
+          // Caso falhe, mostra o número da célula
+          const titleElement = document.querySelector('.dashboard-title');
+          if (titleElement) {
+            titleElement.textContent = `Bem-vindo, Profissional ${userCell}`;
+          }
+        });
     });
   </script>
 </body>
