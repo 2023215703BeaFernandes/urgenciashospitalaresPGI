@@ -672,6 +672,7 @@
         <p id="triageProtocol">Classificação: <span id="protocolColor"></span></p>
         <p id="triageTime">Tempo Máximo para Atendimento: <span id="maxTime"></span></p>
         <p id="triageRecommendations">Recomendações: <span id="recommendationsText"></span></p>
+        <p id="triageDiagnosis">Possíveis Diagnósticos: <span id="diagnosisSuggestions"></span></p>
         <button class="action-button" onclick="resetTriage()">Nova Triagem</button>
         <button class="action-button" onclick="addToAttended()">Registrar Atendimento</button>
       </div>
@@ -971,14 +972,116 @@
       document.getElementById('protocolColor').textContent = protocolColor;
       document.getElementById('maxTime').textContent = maxTime;
       document.getElementById('recommendationsText').textContent = recommendations;
+
+      // Adicionar sugestões de diagnóstico baseadas nos critérios
+      const diagnosisSuggestions = getDiagnosisSuggestions(selectedCriteria, protocolColor);
+      document.getElementById('diagnosisSuggestions').innerHTML = diagnosisSuggestions;
       document.getElementById('triageResult').style.display = 'block';
-      
+          
       // Adicionar lógica para casos especiais
       if (protocolColor === 'Vermelho' || protocolColor === 'Laranja') {
         alert(`ALERTA: Paciente classificado como ${protocolColor} - ${recommendations}`);
       }
     }
     
+    function getDiagnosisSuggestions(selectedCriteria, protocolColor) {
+      let suggestions = [];
+      const references = [];
+      
+      // Mapeamento de critérios para diagnósticos possíveis
+      const diagnosisMap = {
+        // Vermelho
+        'parada_cardiorespiratoria': ['Parada cardiorrespiratória', 'Infarto agudo do miocárdio', 'Embolia pulmonar maciça'],
+        'dor_peito_sca': ['Síndrome coronariana aguda', 'Infarto do miocárdio', 'Angina instável'],
+        'falta_ar_grave': ['Edema agudo de pulmão', 'Pneumotórax hipertensivo', 'Tromboembolismo pulmonar'],
+        'hemorragia_ativa': ['Hemorragia digestiva', 'Ruptura de varizes esofágicas', 'Trauma vascular'],
+        'avc_agudo': ['Acidente vascular cerebral isquêmico', 'Hemorragia intracraniana'],
+        'trauma_grave': ['Trauma múltiplo', 'Hemorragia interna', 'Tamponamento cardíaco'],
+        
+        // Laranja
+        'dor_peito_atipica': ['Doença arterial coronariana', 'Pericardite', 'Doença do refluxo gastroesofágico'],
+        'falta_ar_moderada': ['Pneumonia', 'Asma aguda', 'DPOC exacerbado'],
+        'dor_abdominal_intensa': ['Apendicite aguda', 'Colecistite', 'Pancreatite aguda'],
+        'cefaleia_explosiva': ['Hemorragia subaracnóidea', 'Hipertensão intracraniana'],
+        'sinais_sepse': ['Sepse', 'Choque séptico', 'Infecção grave'],
+        
+        // Amarelo
+        'dor_abdominal_moderada': ['Gastrite', 'Doença inflamatória pélvica', 'Cólica renal'],
+        'cefaleia_intensa': ['Enxaqueca', 'Cefaleia tensional', 'Sinusite'],
+        'vomitos_persistentes': ['Gastroenterite', 'Obstrução intestinal', 'Gravidez'],
+        'febre_alta_crianca': ['Infecção viral', 'Otite média aguda', 'Infecção urinária'],
+        
+        // Verde/Azul
+        'dor_leve': ['Tensão muscular', 'Cefaleia tensional', 'Dor musculoesquelética'],
+        'febre_sem_sinais_alarme': ['Virose', 'Infecção leve das vias aéreas'],
+        'diarreia_sem_desidratacao': ['Gastroenterite viral', 'Intoxicação alimentar']
+      };
+
+      // Referências baseadas em protocolos reconhecidos
+      const referenceMap = {
+        'cardiaco': 'Baseado nas Diretrizes da American Heart Association (AHA) para Emergências Cardiovasculares',
+        'respiratorio': 'Baseado no Protocolo de Manchester e diretrizes da British Thoracic Society',
+        'neurologico': 'Baseado nas diretrizes da World Stroke Organization',
+        'abdominal': 'Baseado no Algoritmo de Dor Abdominal Aguda do American College of Emergency Physicians',
+        'infeccioso': 'Baseado nos critérios de Sepse-3 da Society of Critical Care Medicine',
+        'pediatrico': 'Baseado no Pediatric Advanced Life Support (PALS) da American Heart Association'
+      };
+
+      // Gerar sugestões únicas baseadas nos critérios selecionados
+      selectedCriteria.forEach(criteria => {
+        if (diagnosisMap[criteria]) {
+          suggestions = [...new Set([...suggestions, ...diagnosisMap[criteria]])];
+        }
+      });
+
+      // Adicionar diagnósticos gerais baseados na cor se nenhum específico foi encontrado
+      if (suggestions.length === 0) {
+        if (protocolColor === 'Vermelho') {
+          suggestions = ['Emergência médica não especificada', 'Condição potencialmente fatal'];
+          references.push(referenceMap.cardiaco);
+        } else if (protocolColor === 'Laranja') {
+          suggestions = ['Condição aguda potencialmente grave', 'Doença sistêmica'];
+          references.push(referenceMap.infeccioso);
+        }
+      }
+
+      // Adicionar referências baseadas nos critérios
+      if (selectedCriteria.some(c => ['parada_cardiorespiratoria', 'dor_peito_sca', 'dor_peito_atipica'].includes(c))) {
+        references.push(referenceMap.cardiaco);
+      }
+      if (selectedCriteria.some(c => ['falta_ar_grave', 'falta_ar_moderada'].includes(c))) {
+        references.push(referenceMap.respiratorio);
+      }
+      if (selectedCriteria.some(c => ['avc_agudo', 'cefaleia_explosiva'].includes(c))) {
+        references.push(referenceMap.neurologico);
+      }
+      if (selectedCriteria.some(c => ['dor_abdominal_intensa', 'dor_abdominal_moderada'].includes(c))) {
+        references.push(referenceMap.abdominal);
+      }
+      if (selectedCriteria.some(c => ['sinais_sepse', 'febre_alta_crianca'].includes(c))) {
+        references.push(referenceMap.infeccioso);
+      }
+      if (selectedCriteria.some(c => ['crianca_gravemente_doente', 'crianca_febre_irritabilidade'].includes(c))) {
+        references.push(referenceMap.pediatrico);
+      }
+
+      // Formatar a saída
+      let html = '<ul>';
+      suggestions.forEach(dx => {
+        html += `<li>${dx}</li>`;
+      });
+      html += '</ul>';
+
+      // Adicionar referências se houver
+      if (references.length > 0) {
+        html += '<p><small>Referências: ';
+        html += [...new Set(references)].join('; ');
+        html += '</small></p>';
+      }
+
+      return html;
+    }
+
     function resetTriage() {
       document.getElementById('triageForm').reset();
       document.getElementById('triageResult').style.display = 'none';
