@@ -369,13 +369,25 @@
         return;
       }
       
-      // Mostrar mensagem de sucesso
-      alert('Conta criada com sucesso! Você será redirecionado para a página inicial.');
+      // Armazenar o nome do usuário no sessionStorage
+      const firstName = document.getElementById('firstName').value;
+      const lastName = document.getElementById('lastName').value;
+      const fullName = `${firstName} ${lastName}`;
+      sessionStorage.setItem('currentUserName', fullName);
       
-      // Redirecionar para a página principal após 2 segundos
-      setTimeout(function() {
-        document.location = 'index.html';
-      }, 2000);
+      // Mostrar mensagem de sucesso
+      alert('Conta criada com sucesso! Você será redirecionado para o dashboard.');
+      
+      // Redirecionar para o dashboard correto
+      if (userType.value === 'professional') {
+        setTimeout(function() {
+          window.location.href = 'dashboard_profissionais.html';
+        }, 2000);
+      } else if (userType.value === 'manager') {
+        setTimeout(function() {
+          window.location.href = 'dashboard_gestor.html';
+        }, 2000);
+      }
     });
   </script>
 </body>
