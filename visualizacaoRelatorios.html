@@ -144,13 +144,7 @@
 
     function loadReports() {
       // Obter relatórios do localStorage (simulando banco de dados)
-      const reports = [];
-      
-      // Adicionar o último relatório salvo (do formulário de relatório)
-      const lastReport = localStorage.getItem('ultimoRelatorio');
-      if (lastReport) {
-        reports.push(JSON.parse(lastReport));
-      }
+      const savedReports = JSON.parse(localStorage.getItem('relatorios')) || [];
       
       // Adicionar alguns relatórios de exemplo (em um sistema real, viriam do servidor)
       const exampleReports = [
@@ -160,7 +154,7 @@
         },
         {
           date: '2025-05-28',
-          content: 'Analisei os dados da semana e identifiquei que precisamos de mais profissionais às quartas-feiras. Sugeri ao RH a contratação de mais 2 enfermeiros.'
+          content: 'Analisei os dados da semana e identifiquei que precisamos de mais profissionais às quartas-feiras. Sugero a mudança de turmo de mais 2 enfermeiros.'
         },
         {
           date: '2025-05-25',
@@ -168,39 +162,39 @@
         }
       ];
       
-      // Adicionar apenas se não existirem no localStorage
-      exampleReports.forEach(report => {
-        if (!reports.some(r => r.date === report.date)) {
-          reports.push(report);
+      // Combinar relatórios (evitando duplicatas)
+        const allReports = [...savedReports];
+        exampleReports.forEach(exReport => {
+            if (!allReports.some(r => r.date === exReport.date)) {
+            allReports.push(exReport);
+            }
+        });
+        
+        // Ordenar por data (mais recente primeiro)
+        allReports.sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        // Exibir na página
+        const reportsList = document.getElementById('reportsList');
+        
+        if (allReports.length === 0) {
+            reportsList.innerHTML = '<div class="no-reports"><p>Nenhum relatório encontrado.</p></div>';
+            return;
         }
-      });
-      
-      // Ordenar relatórios por data (mais recente primeiro)
-      reports.sort((a, b) => new Date(b.date) - new Date(a.date));
-      
-      // Exibir relatórios na página
-      const reportsList = document.getElementById('reportsList');
-      
-      if (reports.length === 0) {
-        reportsList.innerHTML = '<div class="no-reports"><p>Nenhum relatório encontrado.</p></div>';
-        return;
-      }
-      
-      reports.forEach(report => {
-        const reportCard = document.createElement('div');
-        reportCard.className = 'report-card';
         
-        const formattedDate = new Date(report.date).toLocaleDateString('pt-BR');
-        
-        reportCard.innerHTML = `
-          <div class="report-header">
-            <span class="report-date">${formattedDate}</span>
-          </div>
-          <div class="report-content">${report.content}</div>
-        `;
-        
-        reportsList.appendChild(reportCard);
-      });
+        allReports.forEach(report => {
+            const reportCard = document.createElement('div');
+            reportCard.className = 'report-card';
+            const formattedDate = new Date(report.date).toLocaleDateString('pt-BR');
+            
+            reportCard.innerHTML = `
+            <div class="report-header">
+                <span class="report-date">${formattedDate}</span>
+            </div>
+            <div class="report-content">${report.content}</div>
+            `;
+            
+            reportsList.appendChild(reportCard);
+        });
     }
   </script>
 </body>

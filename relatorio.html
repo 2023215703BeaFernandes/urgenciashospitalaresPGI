@@ -87,21 +87,24 @@
     document.getElementById('reportForm').addEventListener('submit', function(e) {
       e.preventDefault();
       
-      // Simular salvamento (em um sistema real, enviaria para o servidor)
       const today = new Date().toISOString().split('T')[0];
       const reportData = {
         date: document.getElementById('reportDate').value || today,
         content: document.getElementById('reportContent').value
       };
       
-      console.log('Relatório salvo:', reportData); // Apenas para demonstração
+      // Obter relatórios existentes ou criar array vazio
+      const existingReports = JSON.parse(localStorage.getItem('relatorios')) || [];
+      
+      // Adicionar novo relatório
+      existingReports.push(reportData);
+      
+      // Salvar array atualizado
+      localStorage.setItem('relatorios', JSON.stringify(existingReports));
       
       // Mostrar mensagem de sucesso
       document.getElementById('reportForm').style.display = 'none';
       document.getElementById('successMessage').style.display = 'block';
-      
-      // Opcional: Salvar no localStorage para persistência
-      localStorage.setItem('ultimoRelatorio', JSON.stringify(reportData));
     });
     
     // Definir data padrão como hoje
