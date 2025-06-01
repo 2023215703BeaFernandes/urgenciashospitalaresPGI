@@ -894,5 +894,21 @@
     });
 
   </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const userData = JSON.parse(sessionStorage.getItem('currentUser'));
+      
+      if (userData && userData.type === 'manager') {
+        document.querySelector('.dashboard-title').textContent = `Bem-vindo, ${userData.name.split(' ')[0]}`;
+        if (userData.position) {
+          document.getElementById('userPosition').textContent = userData.position;
+        }
+      } else {
+        window.location.href = 'login.html';
+      }
+    });
+  </script>
+
 </body>
 </html>

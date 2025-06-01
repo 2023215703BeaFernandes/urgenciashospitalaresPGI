@@ -84,31 +84,63 @@
   </div>
 
   <script>
-    document.getElementById('reportForm').addEventListener('submit', function(e) {
+    // Selecionar tipo de usuário
+    function selectUserType(type) {
+      document.querySelectorAll('.user-type').forEach(el => {
+        el.classList.remove('selected');
+      });
+      event.currentTarget.classList.add('selected');
+      document.getElementById(type).checked = true;
+    }
+    
+    document.getElementById('registrationForm').addEventListener('submit', function(e) {
       e.preventDefault();
       
-      const today = new Date().toISOString().split('T')[0];
-      const reportData = {
-        date: document.getElementById('reportDate').value || today,
-        content: document.getElementById('reportContent').value
+      // Validações básicas
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      if (password !== confirmPassword) {
+        alert('As senhas não coincidem!');
+        return;
+      }
+      
+      const userType = document.querySelector('input[name="userType"]:checked');
+      if (!userType) {
+        alert('Por favor, selecione um tipo de usuário');
+        return;
+      }
+      
+      if (!document.getElementById('terms').checked) {
+        alert('Deve aceitar os termos de serviço');
+        return;
+      }
+      
+      // Armazenar dados do usuário
+      const firstName = document.getElementById('firstName').value;
+      const lastName = document.getElementById('lastName').value;
+      const email = document.getElementById('email').value;
+      
+      const userData = {
+        name: `${firstName} ${lastName}`,
+        email: email,
+        type: userType.value,
+        // Adicionar outros campos conforme necessário
+        specialty: userType.value === 'professional' ? document.getElementById('specialty').value : null,
+        crm: userType.value === 'professional' ? document.getElementById('crm').value : null,
+        position: userType.value === 'manager' ? document.getElementById('position').value : null
       };
       
-      // Obter relatórios existentes ou criar array vazio
-      const existingReports = JSON.parse(localStorage.getItem('relatorios')) || [];
+      // Armazenar no sessionStorage
+      sessionStorage.setItem('currentUser', JSON.stringify(userData));
       
-      // Adicionar novo relatório
-      existingReports.push(reportData);
-      
-      // Salvar array atualizado
-      localStorage.setItem('relatorios', JSON.stringify(existingReports));
-      
-      // Mostrar mensagem de sucesso
-      document.getElementById('reportForm').style.display = 'none';
-      document.getElementById('successMessage').style.display = 'block';
+      // Redirecionamento
+      alert('Conta criada com sucesso! Redirecionando...');
+      setTimeout(() => {
+        window.location.href = userType.value === 'professional' 
+          ? 'dashboard_profissionais.html' 
+          : 'dashboard_gestor.html';
+      }, 1000);
     });
-    
-    // Definir data padrão como hoje
-    document.getElementById('reportDate').valueAsDate = new Date();
   </script>
 </body>
 </html>

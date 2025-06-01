@@ -1340,18 +1340,26 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Recupera o nome armazenado no sessionStorage
-      const userName = sessionStorage.getItem('currentUserName');
+      // Recuperar dados do usuário
+      const userData = JSON.parse(sessionStorage.getItem('currentUser'));
       
-      // Atualiza o título com o nome do usuário
-      const titleElement = document.querySelector('.dashboard-title');
-      if (titleElement && userName) {
-        // Se for profissional de saúde, adiciona "Dr." antes do nome
-        if (window.location.pathname.includes('dashboard_profissionais')) {
-          titleElement.textContent = `Bem-vindo, Dr. ${userName.split(' ')[0]}`;
-        } else {
-          titleElement.textContent = `Bem-vindo, ${userName.split(' ')[0]}`;
+      if (userData) {
+        // Atualizar cabeçalho
+        const titleElement = document.querySelector('.dashboard-title');
+        if (titleElement) {
+          titleElement.textContent = `Bem-vindo, Dr. ${userData.name.split(' ')[0]}`;
         }
+        
+        // Preencher informações adicionais se necessário
+        if (userData.specialty) {
+          const specialtyElement = document.getElementById('userSpecialty');
+          if (specialtyElement) {
+            specialtyElement.textContent = `Especialidade: ${userData.specialty}`;
+          }
+        }
+      } else {
+        // Se não houver dados, redirecionar para login
+        window.location.href = 'login.html';
       }
     });
   </script>
