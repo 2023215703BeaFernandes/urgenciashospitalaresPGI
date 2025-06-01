@@ -1337,5 +1337,23 @@
         });
     });
   </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Recupera o nome armazenado no sessionStorage
+      const userName = sessionStorage.getItem('currentUserName');
+      
+      // Atualiza o título com o nome do usuário
+      const titleElement = document.querySelector('.dashboard-title');
+      if (titleElement && userName) {
+        // Se for profissional de saúde, adiciona "Dr." antes do nome
+        if (window.location.pathname.includes('dashboard_profissionais')) {
+          titleElement.textContent = `Bem-vindo, Dr. ${userName.split(' ')[0]}`;
+        } else {
+          titleElement.textContent = `Bem-vindo, ${userName.split(' ')[0]}`;
+        }
+      }
+    });
+  </script>
 </body>
 </html>
