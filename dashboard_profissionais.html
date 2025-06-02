@@ -1337,31 +1337,5 @@
         });
     });
   </script>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Recuperar dados do usuário
-      const userData = JSON.parse(sessionStorage.getItem('currentUser'));
-      
-      if (userData) {
-        // Atualizar cabeçalho
-        const titleElement = document.querySelector('.dashboard-title');
-        if (titleElement) {
-          titleElement.textContent = `Bem-vindo, Dr. ${userData.name.split(' ')[0]}`;
-        }
-        
-        // Preencher informações adicionais se necessário
-        if (userData.specialty) {
-          const specialtyElement = document.getElementById('userSpecialty');
-          if (specialtyElement) {
-            specialtyElement.textContent = `Especialidade: ${userData.specialty}`;
-          }
-        }
-      } else {
-        // Se não houver dados, redirecionar para login
-        window.location.href = 'login.html';
-      }
-    });
-  </script>
 </body>
 </html>
