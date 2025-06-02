@@ -265,55 +265,6 @@
         <input type="password" id="confirmPassword" minlength="8" required>
       </div>
       
-      <!-- Campos específicos para profissionais de saúde -->
-      <div class="professional-fields">
-        <div class="form-group">
-          <label for="specialty">Especialidade</label>
-          <select id="specialty" required>
-            <option value="">Selecione sua especialidade</option>
-            <option value="clinic">Clínico Geral</option>
-            <option value="pediatric">Pediatria</option>
-            <option value="surgery">Cirurgia</option>
-            <option value="cardiology">Cardiologia</option>
-            <option value="neurology">Neurologia</option>
-            <option value="other">Outra</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label for="crm">Registro Profissional (CRM/COREN)</label>
-          <input type="text" id="crm" required>
-        </div>
-        
-        <div class="form-group">
-          <label for="hospital">Hospital/Instituição</label>
-          <input type="text" id="hospital">
-        </div>
-      </div>
-      
-      <!-- Campos específicos para gestores hospitalares -->
-      <div class="manager-fields">
-        <div class="form-group">
-          <label for="hospitalName">Nome do Hospital/Instituição</label>
-          <input type="text" id="hospitalName">
-        </div>
-        
-        <div class="form-group">
-          <label for="position">Cargo</label>
-          <input type="text" id="position" required>
-        </div>
-        
-        <div class="form-group">
-          <label for="hospitalSize">Tamanho do Hospital</label>
-          <select id="hospitalSize">
-            <option value="">Selecione o porte</option>
-            <option value="small">Pequeno (até 50 leitos)</option>
-            <option value="medium">Médio (50-200 leitos)</option>
-            <option value="large">Grande (mais de 200 leitos)</option>
-          </select>
-        </div>
-      </div>
-      
       <div class="form-group">
         <input type="checkbox" id="terms" required>
         <label for="terms">Eu concordo com os <a href="#">Termos de Serviço</a> e <a href="#">Política de Privacidade</a></label>
@@ -330,65 +281,95 @@
   <script>
     // Selecionar tipo de usuário
     function selectUserType(type) {
-      // Remove a classe 'selected' de todos os tipos
       document.querySelectorAll('.user-type').forEach(el => {
         el.classList.remove('selected');
       });
-      
-      // Adiciona a classe 'selected' apenas ao tipo clicado
       event.currentTarget.classList.add('selected');
-      
-      // Ativa o radio button correspondente
       document.getElementById(type).checked = true;
+      
+      // Mostrar campos específicos
+      document.querySelectorAll('.professional-fields, .manager-fields').forEach(field => {
+        field.style.display = 'none';
+      });
+      
+      if (type === 'professional') {
+        document.querySelector('.professional-fields').style.display = 'block';
+      } else if (type === 'manager') {
+        document.querySelector('.manager-fields').style.display = 'block';
+      }
     }
     
     // Validação do formulário
     document.getElementById('registrationForm').addEventListener('submit', function(e) {
       e.preventDefault();
       
-      // Verificar se as senhas coincidem
-      const password = document.getElementById('password').value;
-      const confirmPassword = document.getElementById('confirmPassword').value;
+      // 1. Validar campos comuns
+      if (!validateCommonFields()) return;
       
-      if (password !== confirmPassword) {
-        alert('As senhas não coincidem!');
-        return;
-      }
-      
-      // Verificar se um tipo de usuário foi selecionado
+      // 2. Validar campos específicos
       const userType = document.querySelector('input[name="userType"]:checked');
-      
       if (!userType) {
         alert('Por favor, selecione um tipo de usuário');
         return;
       }
-      
-      // Verificar termos de serviço
+    
+      // 3. Validar termos
       if (!document.getElementById('terms').checked) {
         alert('Deve aceitar os termos de serviço');
         return;
       }
       
-      // Armazenar o nome do usuário no sessionStorage
+      // 4. Armazenar dados e redirecionar
       const firstName = document.getElementById('firstName').value;
       const lastName = document.getElementById('lastName').value;
-      const fullName = `${firstName} ${lastName}`;
-      sessionStorage.setItem('currentUserName', fullName);
+      sessionStorage.setItem('currentUserName', `${firstName} ${lastName}`);
       
-      // Mostrar mensagem de sucesso
-      alert('Conta criada com sucesso! Você será redirecionado para o dashboard.');
-      
-      // Redirecionar para o dashboard correto
-      if (userType.value === 'professional') {
-        setTimeout(function() {
-          window.location.href = 'dashboard_profissionais.html';
-        }, 2000);
-      } else if (userType.value === 'manager') {
-        setTimeout(function() {
-          window.location.href = 'dashboard_gestor.html';
-        }, 2000);
-      }
+      alert('Conta criada com sucesso! Redirecionando...');
+      setTimeout(() => window.location.href = 'index.html', 1000);
     });
+    
+    function validateCommonFields() {
+      // Verificar campos obrigatórios comuns
+      const requiredFields = ['firstName', 'lastName', 'email', 'password', 'confirmPassword'];
+      for (const fieldId of requiredFields) {
+        const field = document.getElementById(fieldId);
+        if (!field.value.trim()) {
+          alert(`Por favor, preencha o campo ${field.labels[0].textContent}`);
+          field.focus();
+          return false;
+        }
+      }
+      
+      // Verificar senhas
+      if (document.getElementById('password').value !== 
+          document.getElementById('confirmPassword').value) {
+        alert('As senhas não coincidem!');
+        return false;
+      }
+      
+      return true;
+    }
+    
+    function validateProfessionalFields() {
+      const requiredFields = ['specialty', 'crm'];
+      for (const fieldId of requiredFields) {
+        const field = document.getElementById(fieldId);
+        if (!field.value.trim()) {
+          alert(`Por favor, preencha o campo ${field.labels[0].textContent}`);
+          field.focus();
+          return false;
+        }
+      }
+      return true;
+    }
+    
+    function validateManagerFields() {
+      if (!document.getElementById('position').value.trim()) {
+        alert('Por favor, preencha o campo Cargo');
+        return false;
+      }
+      return true;
+    }
   </script>
 </body>
 </html>
