@@ -565,7 +565,7 @@
           
               <h4>Critérios <span style="color: red;">Vermelhos</span> (Emergência - Atendimento Imediato)</h4>
               <input type="checkbox" id="criteria_red1" name="criteria" value="paragem_cardiorespiratoria">
-              <label for="criteria_red1">Parada cardiorrespiratória</label><br>
+              <label for="criteria_red1">Paragem cardiorrespiratória</label><br>
               <input type="checkbox" id="criteria_red2" name="criteria" value="dor_peito_sca">
               <label for="criteria_red2">Dor no peito sugestiva de SCA (com sudorese, irradiação)</label><br>
               <input type="checkbox" id="criteria_red3" name="criteria" value="falta_ar_grave">
@@ -910,7 +910,7 @@
       
       // Critérios Vermelhos (Emergência)
       const redCriteria = [
-        'parada_cardiorespiratoria', 'dor_peito_sca', 'falta_ar_grave', 
+        'paragem_cardiorespiratoria', 'dor_peito_sca', 'falta_ar_grave', 
         'hemorragia_ativa', 'avc_agudo', 'trauma_grave', 'queimadura_grave',
         'convulsao_prolongada', 'crianca_gravemente_doente'
       ];
@@ -989,7 +989,7 @@
       // Mapeamento de critérios para diagnósticos possíveis
       const diagnosisMap = {
         // Vermelho
-        'parada_cardiorespiratoria': ['Parada cardiorrespiratória', 'Infarto agudo do miocárdio', 'Embolia pulmonar maciça'],
+        'paragem_cardiorespiratoria': ['Paragem cardiorrespiratória', 'Infarto agudo do miocárdio', 'Embolia pulmonar maciça'],
         'dor_peito_sca': ['Síndrome coronariana aguda', 'Infarto do miocárdio', 'Angina instável'],
         'falta_ar_grave': ['Edema agudo de pulmão', 'Pneumotórax hipertensivo', 'Tromboembolismo pulmonar'],
         'hemorragia_ativa': ['Hemorragia digestiva', 'Ruptura de varizes esofágicas', 'Trauma vascular'],
@@ -1044,7 +1044,7 @@
       }
 
       // Adicionar referências baseadas nos critérios
-      if (selectedCriteria.some(c => ['parada_cardiorespiratoria', 'dor_peito_sca', 'dor_peito_atipica'].includes(c))) {
+      if (selectedCriteria.some(c => ['paragem_cardiorespiratoria', 'dor_peito_sca', 'dor_peito_atipica'].includes(c))) {
         references.push(referenceMap.cardiaco);
       }
       if (selectedCriteria.some(c => ['falta_ar_grave', 'falta_ar_moderada'].includes(c))) {
