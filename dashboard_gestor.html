@@ -219,6 +219,15 @@
       display: block;
     }
 
+    .date-message {
+      padding: 15px;
+      margin: 10px 0;
+      background-color: #f8f9fa;
+      border-left: 4px solid #0E4A6F;
+      color: #0E4A6F;
+      font-weight: bold;
+    }
+
     .recommendation-controls {
       display: flex;
       justify-content: space-between;
@@ -300,9 +309,9 @@
           <option value="12">Dezembro</option>
         </select>
       </div>
+      <div id="historical-message" class="date-message" style="display: none;"></div>
       <canvas id="patientFlowChart"></canvas>
       <div class="chart-actions">
-        <button class="reset-btn" onclick="resetZoom('patientFlowChart')">Resetar Zoom</button>
         <div class="action-buttons">
           <button onclick="analyzePeakTimes()">Analisar Horários de Pico</button>
         </div>
@@ -318,6 +327,9 @@
           <option value="14">Próximos 14 dias</option>
           <option value="30">Próximos 30 dias</option>
           <option value="90">Próximos 3 meses</option>
+          <option value="120">Próximos 4 meses</option>
+          <option value="180">Próximos 6 meses</option>
+          <option value="365">Próximos 12 meses</option>
         </select>
       </div>
       <canvas id="forecastChart"></canvas>
@@ -400,11 +412,11 @@
       // 1. Gráfico de Fluxo de Pacientes (com zoom)
       const patientFlowCtx = document.getElementById('patientFlowChart').getContext('2d');
       patientFlowChart = new Chart(patientFlowCtx, {
-        type: 'line',
+        type: 'bar',
         data: {
           labels: Array.from({length: 24}, (_, i) => `${i}:00`),
           datasets: [{
-            label: 'Pacientes por hora',
+            label: 'Pacientes por dia',
             data: [],
             borderColor: '#0E4A6F',
             backgroundColor: 'rgba(14, 74, 111, 0.1)',
@@ -447,8 +459,8 @@
           plugins: {
             zoom: {
               zoom: {
-                wheel: { enabled: true },
-                pinch: { enabled: true },
+                wheel: { enabled: false },
+                pinch: { enabled: false },
                 mode: 'xy',
               },
               pan: {
@@ -684,20 +696,43 @@
     }
 
     // Função para gerar dados horários fictícios
-    function generateHourlyData(date) {
-      const dayOfWeek = date.getDay();
-      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+    function generateDailyData(year, month) {
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth() + 1;
+      const currentDay = today.getDate();
       
-      return Array.from({length: 24}, (_, hour) => {
-        let base = 10 + Math.random() * 15;
-        if (hour >= 8 && hour <= 10) base += 25;
-        if (hour >= 14 && hour <= 16) base += 15;
-        if (hour >= 22 || hour <= 6) base *= 0.4;
-        if (isWeekend) base *= 0.8;
-        const value = Math.floor(base + Math.random() * 10);
-        return Math.max(0, value);
+      // Determinar quantos dias tem o mês
+      let daysInMonth;
+      if (!month) { // Se "Todos" estiver selecionado
+          daysInMonth = 30; // Valor médio para simplificar
+      } else {
+          daysInMonth = new Date(year, month, 0).getDate();
+      }
+      
+      // Determinar até que dia mostrar dados
+      let daysToShow = daysInMonth;
+      if (year === currentYear && (!month || month === currentMonth)) {
+          daysToShow = currentDay - 1; // Mostrar até ontem
+      }
+      
+      return Array.from({length: daysInMonth}, (_, day) => {
+          const dayNumber = day + 1;
+          
+          // Se for futuro, retornar null
+          if (dayNumber > daysToShow) return null;
+          
+          // Lógica de geração de dados (exemplo)
+          let base = 50 + Math.random() * 30;
+          
+          // Ajustes para fins de semana
+          const date = new Date(year, month ? month - 1 : 0, dayNumber);
+          const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+          if (isWeekend) base *= 0.7;
+          
+          return Math.max(0, Math.floor(base + Math.random() * 20));
       });
-    }
+  }
 
     // Função para gerar dados de profissionais por turno
     function generateStaffData(date) {
@@ -760,12 +795,70 @@
 
     // Atualizar gráficos com base nas seleções
     function updateHistoricalChart() {
+      const yearSelect = document.getElementById('year-select');
+      const monthSelect = document.getElementById('month-select');
+      const messageDiv = document.getElementById('historical-message');
+      const canvas = document.getElementById('patientFlowChart');
+      
+      const selectedYear = parseInt(yearSelect.value);
+      const selectedMonth = monthSelect.value === 'all' ? null : parseInt(monthSelect.value);
       const today = new Date();
-      const hourlyData = generateHourlyData(today);
-      patientFlowChart.data.datasets[0].data = hourlyData;
-      patientFlowChart.data.datasets[0].label = 'Pacientes por hora (Hoje)';
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth() + 1;
+      
+      // Verificar se a seleção é futura
+      if (selectedYear > currentYear || 
+          (selectedYear === currentYear && selectedMonth && selectedMonth > currentMonth)) {
+          // Mostrar mensagem e esconder gráfico
+          messageDiv.style.display = 'block';
+          canvas.style.display = 'none';
+          
+          if (selectedMonth) {
+              const monthName = new Date(selectedYear, selectedMonth - 1, 1)
+                              .toLocaleString('pt-BR', { month: 'long' });
+              messageDiv.textContent = `Dados disponíveis apenas até ${currentMonth}/${currentYear}. 
+                                      ${monthName} de ${selectedYear} ainda não ocorreu.`;
+          } else {
+              messageDiv.textContent = `Dados disponíveis apenas até ${currentMonth}/${currentYear}. 
+                                      O ano de ${selectedYear} ainda não foi completado.`;
+          }
+          
+          return;
+      }
+      
+      // Se a data é válida, esconder mensagem e mostrar gráfico
+      messageDiv.style.display = 'none';
+      canvas.style.display = 'block';
+      
+      // Gerar dados diários
+      const dailyData = generateDailyData(selectedYear, selectedMonth);
+      
+      // Criar labels dos dias
+      const daysInMonth = selectedMonth ? new Date(selectedYear, selectedMonth, 0).getDate() : 30;
+      const labels = Array.from({length: daysInMonth}, (_, i) => `${i + 1}/${selectedMonth || ''}`);
+      
+      // Atualizar gráfico
+      patientFlowChart.data.labels = labels;
+      patientFlowChart.data.datasets[0].data = dailyData;
+      
+      // Atualizar label conforme o período selecionado
+      let label = 'Pacientes por dia';
+      if (selectedMonth) {
+          const monthName = new Date(selectedYear, selectedMonth - 1, 1)
+                          .toLocaleString('pt-BR', { month: 'long' });
+          label = `Pacientes por dia (${monthName} ${selectedYear})`;
+      } else {
+          label = `Pacientes por dia (${selectedYear})`;
+      }
+      
+      // Adicionar "(até agora)" se for o mês/ano atual
+      if (selectedYear === currentYear && (!selectedMonth || selectedMonth === currentMonth)) {
+          label += ' (até agora)';
+      }
+      
+      patientFlowChart.data.datasets[0].label = label;
       patientFlowChart.update();
-    }
+  }
 
     function updateForecastChart() {
       const period = parseInt(document.getElementById('forecast-period').value);
@@ -879,11 +972,20 @@
       // Configurar datas iniciais
       const today = new Date();
       const todayStr = today.toISOString().split('T')[0];
-      
+      const yearSelect = document.getElementById('year-select');
+      const monthSelect = document.getElementById('month-select');
+      document.getElementById('year-select').value = today.getFullYear();
+      document.getElementById('month-select').value = today.getMonth() + 1;
       document.getElementById('staff-date').value = todayStr;
       document.getElementById('comparison-date').value = todayStr;
       document.getElementById('recommendation-date').value = todayStr;
+      // Configurar o ano atual como padrão
+      yearSelect.value = today.getFullYear();
       
+      // Configurar o mês atual como padrão (exceto se for janeiro)
+      if (today.getMonth() > 0) { // Se não é janeiro
+        monthSelect.value = today.getMonth() + 1;
+      }
       // Inicializar gráficos
       initializeCharts();
       
